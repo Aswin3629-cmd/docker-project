@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-run:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,9 +16,8 @@ jobs:
       - name: Build Docker Image
         run: docker build -t myapp .
 
-      - name: Run Container
-        run: docker run -d -p 5000:5000 myapp
+      - name: Trigger Render Deploy
+        run: curl -X POST "https://api.render.com/deploy/srv-d759bi0ule4c73fgqsm0?key=YOUR_RENDER_KEY"
 
-      - name: List Running Containers
+      - name: List Running Containers (debug only)
         run: docker ps
-
