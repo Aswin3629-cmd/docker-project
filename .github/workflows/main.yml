@@ -1,23 +1,11 @@
-name: CI-CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Build Docker Image
-        run: docker build -t myapp .
-
-      - name: Trigger Render Deploy
-        run: curl -X POST "https://api.render.com/deploy/srv-d759bi0ule4c73fgqsm0?key=YOUR_RENDER_KEY"
-
-      - name: List Running Containers (debug only)
-        run: docker ps
+- name: Deploy on EC2
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: ${{ secrets.EC2_HOST }}
+    username: ubuntu
+    key: ${{ secrets.EC2_KEY }}
+    script: |
+      docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+      docker stop flask || true
+      docker rm flask || true
+      docker run -d -p 80:5000 --name flask ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
